@@ -1,0 +1,45 @@
+<div class="jumbotron">
+  <h1 class="display-4">Task Manager</h1>
+  <p class="lead">Manage your tasks efficiently from the web. Track progress, set deadlines, and stay organized.</p>
+  <hr class="my-4">
+  <p>View and manage all your tasks in one place.</p>
+  <a class="btn btn-primary btn-lg" routerLink="/tasks" role="button">View Tasks</a>
+</div>
+
+<div class="row">
+  <div class="col-md-3 mb-4">
+    <div class="card bg-secondary text-white">
+      <div class="card-body text-center">
+        <h5 class="card-title">Total Tasks</h5>
+        <p class="display-4">{{ totalTasks }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 mb-4">
+    <div class="card bg-warning text-dark">
+      <div class="card-body text-center">
+        <h5 class="card-title">Pending</h5>
+        <p class="display-4">{{ pendingTasks }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 mb-4">
+    <div class="card bg-info text-white">
+      <div class="card-body text-center">
+        <h5 class="card-title">In Progress</h5>
+        <p class="display-4">{{ inProgressTasks }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3 mb-4">
+    <div class="card bg-success text-white">
+      <div class="card-body text-center">
+        <h5 class="card-title">Completed</h5>
+        <p class="display-4">{{ completedTasks }}</p>
+      </div>
+    </div>
+  </div>
+</div>

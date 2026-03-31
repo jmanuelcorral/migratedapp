@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  ORACLE_HOST: "oracle-db-service"
+  ORACLE_PORT: "1521"
+  ORACLE_SID: "XEPDB1"
+  ORACLE_USER: "taskmanager"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secrets
+type: Opaque
+stringData:
+  ORACLE_PASSWORD: "taskmanager123"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-backend
+  labels:
+    app: taskmanager-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: taskmanager-backend
+  template:
+    metadata:
+      labels:
+        app: taskmanager-backend
+    spec:
+      containers:
+      - name: backend
+        image: ${ACR_LOGIN_SERVER}/taskmanager-backend:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: ORACLE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: ORACLE_HOST
+        - name: ORACLE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: ORACLE_PORT
+        - name: ORACLE_SID
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: ORACLE_SID
+        - name: ORACLE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: ORACLE_USER
+        - name: ORACLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: ORACLE_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: taskmanager-backend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

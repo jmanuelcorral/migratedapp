@@ -1,0 +1,44 @@
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    environment:
+      ORACLE_PASSWORD: oracle123
+      APP_USER: taskmanager
+      APP_USER_PASSWORD: taskmanager123
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./db/init.sql:/container-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      ORACLE_HOST: oracle-db
+      ORACLE_PORT: 1521
+      ORACLE_SID: XEPDB1
+      ORACLE_USER: taskmanager
+      ORACLE_PASSWORD: taskmanager123
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
+
+volumes:
+  oracle-data:

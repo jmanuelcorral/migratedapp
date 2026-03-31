@@ -1,0 +1,14 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker
+  - docker-compose
+
+runcmd:
+  - systemctl start docker
+  - systemctl enable docker
+  - usermod -aG docker oracleadmin
+  - mkdir -p /opt/oracle/oradata
+  - docker run -d --name oracle-xe -p 1521:1521 -e ORACLE_PASSWORD=${oracle_password} -e APP_USER=taskmanager -e APP_USER_PASSWORD=taskmanager123 -v /opt/oracle/oradata:/opt/oracle/oradata gvenzl/oracle-xe:21-slim

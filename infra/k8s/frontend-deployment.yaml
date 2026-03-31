@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  BACKEND_URL: "http://taskmanager-backend:8080"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-frontend
+  labels:
+    app: taskmanager-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: taskmanager-frontend
+  template:
+    metadata:
+      labels:
+        app: taskmanager-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ${ACR_LOGIN_SERVER}/taskmanager-frontend:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: BACKEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: BACKEND_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: taskmanager-frontend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

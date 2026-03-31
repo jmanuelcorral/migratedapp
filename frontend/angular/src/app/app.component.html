@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">Task Manager</a>
+    <div class="navbar-nav">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a class="nav-link" routerLink="/tasks" routerLinkActive="active">Tasks</a>
+    </div>
+  </div>
+</nav>
+<div class="container mt-4">
+  <router-outlet></router-outlet>
+</div>
+<footer class="bg-light text-center py-3 mt-5">
+  <p class="mb-0">&copy; 2025 Task Manager &mdash; Angular Frontend</p>
+</footer>

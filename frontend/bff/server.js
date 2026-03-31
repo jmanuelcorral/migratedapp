@@ -7,15 +7,20 @@ const PORT = process.env.PORT || 3000;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
 // Proxy API requests to Spring Boot backend
-app.use('/api', createProxyMiddleware({ 
+app.use(createProxyMiddleware({ 
     target: BACKEND_URL, 
     changeOrigin: true,
-    onProxyReq: (proxyReq, req, res) => {
-        console.log(`[PROXY] ${req.method} ${req.url} -> ${BACKEND_URL}${req.url}`);
-    },
-    onError: (err, req, res) => {
-        console.error('[PROXY ERROR]', err.message);
-        res.status(500).json({ error: 'Proxy error', message: err.message });
+    pathFilter: '/api',
+    logger: console,
+    on: {
+        proxyReq: (proxyReq, req, res) => {
+            console.log(`[PROXY] ${req.method} ${req.url} -> ${BACKEND_URL}${req.url}`);
+        },
+        error: (err, req, res) => {
+            console.error('[PROXY ERROR]', err.message);
+            res.writeHead(502, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Proxy error', message: err.message }));
+        }
     }
 }));
 

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "TASKS", schema = "TASKMANAGER")
+@Table(name = "TASKS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class Task {
     
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tasks_seq")
-    @SequenceGenerator(name = "tasks_seq", sequenceName = "TASKMANAGER.TASKS_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "tasks_seq", sequenceName = "TASKS_SEQ", allocationSize = 1)
     private Long id;
     
     @Column(name = "TITLE", nullable = false, length = 200)

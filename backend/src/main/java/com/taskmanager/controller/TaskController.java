@@ -7,9 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,14 +37,7 @@ public class TaskController {
     @PostMapping
     public CompletableFuture<ResponseEntity<TaskResponse>> createTask(@Valid @RequestBody TaskRequest request) {
         return taskService.createTask(request)
-                .thenApply(createdTask -> {
-                    URI location = ServletUriComponentsBuilder
-                            .fromCurrentRequest()
-                            .path("/{id}")
-                            .buildAndExpand(createdTask.getId())
-                            .toUri();
-                    return ResponseEntity.created(location).body(createdTask);
-                });
+                .thenApply(createdTask -> ResponseEntity.status(HttpStatus.CREATED).body(createdTask));
     }
     
     @PutMapping("/{id}")

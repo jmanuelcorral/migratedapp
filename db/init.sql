@@ -1,27 +1,35 @@
 -- TaskManager Database Initialization
 -- Runs automatically in the APP_USER (taskmanager) schema
--- gvenzl/oracle-xe container executes this in the taskmanager user context
+-- gvenzl/oracle-xe container executes this as the APP_USER
 
-CREATE SEQUENCE TASKS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE;
+-- Create sequence for task IDs
+CREATE SEQUENCE TASKS_SEQ START WITH 1 INCREMENT BY 1 NOCACHE
+/
 
+-- Create tasks table
 CREATE TABLE TASKS (
-    ID NUMBER(10) DEFAULT TASKS_SEQ.NEXTVAL PRIMARY KEY,
+    ID NUMBER(10) PRIMARY KEY,
     TITLE VARCHAR2(200) NOT NULL,
     DESCRIPTION VARCHAR2(2000),
     STATUS NUMBER(1) DEFAULT 0 NOT NULL,
     CREATED_DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     DUE_DATE TIMESTAMP NULL,
     CONSTRAINT CHK_STATUS CHECK (STATUS IN (0, 1, 2))
-);
+)
+/
 
 -- Seed data for testing
 INSERT INTO TASKS (ID, TITLE, DESCRIPTION, STATUS, DUE_DATE) 
-VALUES (TASKS_SEQ.NEXTVAL, 'Sample Task 1', 'This is a sample task for testing', 0, CURRENT_TIMESTAMP + INTERVAL '7' DAY);
+VALUES (TASKS_SEQ.NEXTVAL, 'Sample Task 1', 'This is a sample task for testing', 0, CURRENT_TIMESTAMP + INTERVAL '7' DAY)
+/
 
 INSERT INTO TASKS (ID, TITLE, DESCRIPTION, STATUS, DUE_DATE) 
-VALUES (TASKS_SEQ.NEXTVAL, 'Sample Task 2', 'Another sample task', 1, CURRENT_TIMESTAMP + INTERVAL '14' DAY);
+VALUES (TASKS_SEQ.NEXTVAL, 'Sample Task 2', 'Another sample task', 1, CURRENT_TIMESTAMP + INTERVAL '14' DAY)
+/
 
 INSERT INTO TASKS (ID, TITLE, DESCRIPTION, STATUS, DUE_DATE) 
-VALUES (TASKS_SEQ.NEXTVAL, 'Completed Task', 'This task is done', 2, NULL);
+VALUES (TASKS_SEQ.NEXTVAL, 'Completed Task', 'This task is done', 2, NULL)
+/
 
-COMMIT;
+COMMIT
+/
